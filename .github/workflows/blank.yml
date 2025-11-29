@@ -1,0 +1,29 @@
+name: Update Lyrics Index
+on:
+  push:
+    paths:
+      - 'lyrics/**' # Se déclenche quand on ajoute un fichier lyrics
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          
+      - name: Run Indexer Script
+        run: python generate_db.py
+        
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add database.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update database.json" && git push)
