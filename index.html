@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyrics RealSync</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Lycrics_realsync</h1>
+            <p>Index des fichiers bruts</p>
+        </header>
+
+        <div class="search-box">
+            <span class="search-icon">⌘</span>
+            <input type="text" id="search-input" placeholder="Rechercher..." autocomplete="off">
+        </div>
+
+        <div id="results-container" class="results-grid"></div>
+
+        <div id="lyrics-modal" class="modal hidden">
+            <div class="modal-content">
+                
+                <div class="modal-header">
+                    <h2 id="modal-title">Nom du fichier</h2>
+                    <div class="header-actions">
+                        <a id="download-btn" href="#" download class="btn-download">
+                            Télécharger
+                        </a>
+                        <span id="close-modal">&times;</span>
+                    </div>
+                </div>
+
+                <div class="lyrics-container">
+                    <pre id="modal-body" class="lyrics-text"></pre>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
