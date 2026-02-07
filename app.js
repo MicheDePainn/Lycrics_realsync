@@ -11,9 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('database.json')
         .then(response => response.json())
         .then(data => {
-            allLyrics = data;
+            allLyrics = data.map(item => {
+                let name = item.filename.replace('.lrc', '');
+                let parts = name.split(' - ');
+                return {
+                    ...item,
+                    title: parts[0] || name,
+                    artist: parts[1] || 'Artiste inconnu'
+                };
+            });
             searchInput.disabled = false;
-            searchInput.placeholder = "Rechercher (Titre, Artiste)...";
+            searchInput.placeholder = "Rechercher un titre ou un artiste...";
             searchInput.focus();
         })
         .catch(err => {
@@ -42,13 +50,15 @@ function handleSearch(query) {
     container.innerHTML = ''; 
     selectedIndex = -1;
 
-    if (!query || query.length < 1) {
+    if (!query || query.trim().length < 1) {
         currentResults = [];
         return; 
     }
 
     const lowerQuery = query.toLowerCase();
     currentResults = allLyrics.filter(file => 
+        file.title.toLowerCase().includes(lowerQuery) || 
+        file.artist.toLowerCase().includes(lowerQuery) ||
         file.filename.toLowerCase().includes(lowerQuery)
     );
 
@@ -60,10 +70,11 @@ function displayResults(results) {
     
     if (results.length === 0) {
         const msg = document.createElement('div');
-        msg.style.color = '#999';
-        msg.style.fontSize = '0.9rem';
-        msg.style.padding = '10px 0';
-        msg.innerText = 'Aucun fichier correspondant.';
+        msg.style.color = 'var(--text-muted)';
+        msg.style.fontSize = '1rem';
+        msg.style.textAlign = 'center';
+        msg.style.padding = '40px 0';
+        msg.innerText = 'Aucun titre trouvé.';
         container.appendChild(msg);
         return;
     }
@@ -74,8 +85,11 @@ function displayResults(results) {
         card.id = `result-${index}`;
         
         card.innerHTML = `
-            <span class="song-icon">📄</span>
-            <span class="song-title">${item.filename}</span>
+            <div class="song-icon">🎵</div>
+            <div class="song-info">
+                <span class="song-title">${item.title}</span>
+                <span class="song-artist">${item.artist}</span>
+            </div>
         `;
         
         card.addEventListener('click', () => openFileModal(item.path, item.filename));
@@ -129,12 +143,23 @@ function scrollToSelection() {
     }
 }
 
+function formatLRCLines(text) {
+    const lines = text.split('\n');
+    return lines.map(line => {
+        const timestampMatch = line.match(/^(\[[0-9]{2}:[0-9]{2}\.[0-9]{2}\])(.*)/);
+        if (timestampMatch) {
+            return `<span class="lrc-line"><span class="lrc-timestamp">${timestampMatch[1]}</span>${timestampMatch[2]}</span>`;
+        }
+        return `<span class="lrc-line">${line}</span>`;
+    }).join('');
+}
+
 function openFileModal(path, filename) {
     fetch(path)
         .then(res => res.text())
         .then(text => {
             document.getElementById('modal-title').innerText = filename;
-            document.getElementById('modal-body').textContent = text;
+            document.getElementById('modal-body').innerHTML = formatLRCLines(text);
             
             const downloadBtn = document.getElementById('download-btn');
             downloadBtn.href = path;
@@ -142,34 +167,32 @@ function openFileModal(path, filename) {
 
             const copyBtn = document.getElementById('copy-btn');
             copyBtn.innerText = "Copier";
-            copyBtn.style.background = 'transparent';
-            copyBtn.style.color = 'var(--text-main)';
+            copyBtn.classList.add('primary');
 
             const modal = document.getElementById('lyrics-modal');
             modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scroll
         });
 }
 
 function closeModal() {
     document.getElementById('lyrics-modal').classList.add('hidden');
+    document.body.style.overflow = '';
     document.getElementById('search-input').focus();
 }
 
 function copyLyricsToClipboard() {
+    // Extract raw text from innerHTML by replacing our spans or just use the textContent of container
+    // Actually, textContent will give us everything without tags.
     const text = document.getElementById('modal-body').textContent;
     navigator.clipboard.writeText(text).then(() => {
         const copyBtn = document.getElementById('copy-btn');
         copyBtn.innerText = "Copié !";
-        copyBtn.style.background = '#000';
-        copyBtn.style.color = '#fff';
         
         setTimeout(() => {
             copyBtn.innerText = "Copier";
-            copyBtn.style.background = 'transparent';
-            copyBtn.style.color = 'var(--text-main)';
         }, 2000);
     }).catch(err => {
         console.error('Erreur copie:', err);
-        alert('Impossible de copier le texte automatiquement.');
     });
 }

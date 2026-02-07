@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lyrics RealSync</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1>Lycrics_realsync</h1>
-            <p>Index des fichiers bruts</p>
+            <h1>RealSync</h1>
+            <p>Bibliothèque de paroles LRC synchronisées</p>
         </header>
 
         <div class="search-box">
-            <span class="search-icon">⌘</span>
-            <input type="text" id="search-input" placeholder="Rechercher..." autocomplete="off">
+            <input type="text" id="search-input" placeholder="Rechercher un titre..." autocomplete="off">
         </div>
 
         <div id="results-container" class="results-grid"></div>
@@ -32,7 +33,7 @@
                         <a id="download-btn" href="#" download class="btn-download">
                             Télécharger
                         </a>
-                        <span id="close-modal">&times;</span>
+                        <span id="close-modal">Fermer</span>
                     </div>
                 </div>
 
